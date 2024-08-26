@@ -19,11 +19,11 @@ module.exports = async (mentions) => {
  */
 let checkkcctv = async (data) => {
     let arraydata = [];
-    let x = 0;
+    let x = 1;
     for (let i = 0; i < data.length; i++) {
         let resData = await readData(data[i].name);
         if (resData) {
-            arraydata.push(`${x + 1}. ${data[i].name} is on\n`)
+            arraydata.push(`${x++}. ${data[i].name} is on\n`)
         }
         console.log(`${data[i].name} - ${resData}`);
     }
@@ -36,6 +36,6 @@ let checkkcctv = async (data) => {
  * @returns 
  */
 let readData = async (nameStation) => {
-    let read = fs.existsSync(`${process.env.DRIVE_PATH}:\\Project\\windi-2.0.0\\STREAM\\${nameStation.replace(" ", "")}.bmp`);
+    let read = fs.existsSync(`${process.env.DRIVE_PATH}\\STREAM\\${nameStation.replace(" ", "")}.bmp`);
     return read;
 }

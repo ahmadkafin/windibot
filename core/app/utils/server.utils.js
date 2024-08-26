@@ -42,18 +42,15 @@ let generate = async () => {
     for (let i = 0; i < data.length; i++) {
         if (data[i].isEnable) {
             // resdata.push(`${x + 1}. ${data[i].ip}\n`)
-            await pingServer(data[i].ip)
-                .then((res) => {
-                    resdata.push(`${i + 1}. ${data[i].ip} is ${res.alive ? 'up' : 'down'}\n`)
-                })
+            let res = await pingServer(data[i].ip)
+            resdata.push(`${x+=1}. ${data[i].ip} is ${res.alive ? 'up' : 'down'}\n`)
         }
     }
     return resdata.join("");
 }
 
 let pingServer = async (data) => {
-    let response = await ping.promise.probe(data, { timeout: 5 }).then((value) => {
-        console.log(`ping ${data} - ${value}`)
-    });
+    let response = await ping.promise.probe(data, { timeout: 5 });
+    console.log(`ping ${data} - ${response.alive}`)
     return response;
 } 

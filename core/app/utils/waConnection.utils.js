@@ -43,6 +43,16 @@ let connectionToWhatsapp = async () => {
     sock.ev.on('messages.upsert', async (msgupsert) => {
         await chatsCondition(msgupsert.messages[0].message.conversation, sock, msgupsert)
             .catch(e => console.log(e));
+        // console.log(msgupsert.messages[0]);
+        // console.log(msgupsert.messages[0].key);
+        // console.log(msgupsert.messages[0].message);
+        // const id = msgupsert.messages[0].key.remoteJid;
+        // const participant = msgupsert.messages[0].key.participant === undefined ? msgupsert.messages[0].key.remoteJid : msgupsert.messages[0].key.participant;
+        // const mention = msgupsert.messages[0].key.participant === undefined ? `@${id.replace('@s.whatsapp.net', '')}` : `@${participant.replace('@s.whatsapp.net', '')}`
+    
+        // await sock.sendMessage(msgupsert.messages[0].key.remoteJid,
+        //     {text: `Helo ${mention} i'm awake`, mentions: [participant]});
+
     })
     return sock;
 }
@@ -56,14 +66,14 @@ let connectionToWhatsapp = async () => {
  * @returns 
  */
 const chatsCondition = async (convo, sock, msgupsert) => {
-    const id = msgupsert.messages[0].key.remoteJid;
-    const mention = `@${id.replace('@s.whatsapp.net', '')}`
-
+    const participant = msgupsert.messages[0].key.participant === undefined ? msgupsert.messages[0].key.remoteJid : msgupsert.messages[0].key.participant;
+    const mention = msgupsert.messages[0].key.participant === undefined ? `@${msgupsert.messages[0].key.remoteJid.replace('@s.whatsapp.net', '')}` : `@${participant.replace('@s.whatsapp.net', '')}`
     switch (convo) {
-        case 'windi cek cctv': return await cctvData(sock, id, mention);
-        case 'windi cek page': return await pageData(sock, id, mention);
-        case 'windi cek server': return await severData(sock, id, mention);
-        case 'windi cek service': return await serviceData(sock, id, mention);
+        case 'windi are you awake': return await greetings(sock, msgupsert.messages[0].key.remoteJid, mention, participant);
+        case 'windi cek cctv': return await cctvData(sock, msgupsert.messages[0].key.remoteJid, mention, participant);
+        case 'windi cek page': return await pageData(sock, msgupsert.messages[0].key.remoteJid, mention, participant);
+        case 'windi cek server': return await severData(sock, msgupsert.messages[0].key.remoteJid, mention, participant);
+        case 'windi cek service': return await serviceData(sock, msgupsert.messages[0].key.remoteJid, mention, participant);
         default: return 'Command not found';
     }
 }
@@ -72,15 +82,38 @@ const chatsCondition = async (convo, sock, msgupsert) => {
  * For Whatsapp Chat
  */
 
+
+// /**
+//  * 
+//  * @param {*} sock 
+//  * @param {*} id 
+//  * @param {*} mention 
+//  * @param {*} participant 
+//  */
+// const replyMsg = async(sock, id, mention, participant) => {
+//     await sock.sendMessage(id,{text: `Helo ${mention} please wait`, mentions: [participant]});
+// }
+
+/**
+ * 
+ * @param {*} sock 
+ * @param {*} id 
+ * @param {*} mention 
+ * @param {*} participant 
+ */
+const greetings = async(sock, id, mention, participant) => {
+    await sock.sendMessage(id,{text: `Helo ${mention} i'm awake`, mentions: [participant]});
+}
+
 /**
  * 
  * @param {*} sock 
  * @param {*} id 
  * @param {*} mention 
  */
-const cctvData = async (sock, id, mention) => {
+const cctvData = async (sock, id, mention, participant) => {
     await utils.cctv(mention).then((value) => {
-        sock.sendMessage(id, { text: `${value}`, mentions: [id] })
+        sock.sendMessage(id, { text: `${value}`, mentions: [participant] })
     }).catch((e) => {
         sock.sendMessage(id, { text: `${e}` })
     })
@@ -92,9 +125,9 @@ const cctvData = async (sock, id, mention) => {
  * @param {*} id 
  * @param {*} mention 
  */
-const pageData = async (sock, id, mention) => {
+const pageData = async (sock, id, mention, participant) => {
     await utils.page(mention).then((value) => {
-        sock.sendMessage(id, { text: `${value}`, mentions: [id] })
+        sock.sendMessage(id, { text: `${value}`, mentions: [participant] })
     }).catch((e) => {
         sock.sendMessage(id, { text: `${e}` });
     })
@@ -106,9 +139,9 @@ const pageData = async (sock, id, mention) => {
  * @param {*} id 
  * @param {*} mention 
  */
-const severData = async (sock, id, mention) => {
+const severData = async (sock, id, mention, participant) => {
     await utils.server(mention).then((value) => {
-        sock.sendMessage(id, { text: `${value}`, mentions: [id] })
+        sock.sendMessage(id, { text: `${value}`, mentions: [participant] })
     }).catch((e) => {
         sock.sendMessage(id, { text: `${e}` });
     })
@@ -120,9 +153,9 @@ const severData = async (sock, id, mention) => {
  * @param {*} id 
  * @param {*} mention 
  */
-const serviceData = async (sock, id, mention) => {
+const serviceData = async (sock, id, mention, participant) => {
     await utils.service(mention).then((value) => {
-        sock.sendMessage(id, { text: `${value}`, mention: [id] })
+        sock.sendMessage(id, { text: `${value}`, mention: [participant] })
     }).catch((e) => {
         sock.sendMessage(id, { text: `${e}` });
     });

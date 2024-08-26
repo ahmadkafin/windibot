@@ -5,7 +5,7 @@ const db = require('../models/')
 const Page = db.page;
 
 module.exports = async (mentions) => {
-    const data = await db.sequelize.query("SELECT * FROM APP_PGN.pgn.digio_menu", {
+    const data = await db.sequelize.query("SELECT * FROM APP_PGN.pgn.digio_menu where url LIKE '%.aspx%'", {
         model: Page,
         mapToModel: true
     });
@@ -24,7 +24,7 @@ let generate = async (data) => {
     let token = await tokenauth();
     for (let i = 0; i < data.length; i++) {
         let url = data[i].url;
-        url = url.includes('?') ? `http://10.129.10.138/digio2021/${url}&token=${token}` : `https://gis.pgn.co.id/digio2021/${url}?token=${token}`;
+        url = url.includes('?') ? `http://10.129.10.138/digio2021/${url}&token=${token}` : `http://10.129.10.138/digio2021/${url}?token=${token}`;
         checkPage(url, i).then((res) => {
             arrdata.push(res);
         })
