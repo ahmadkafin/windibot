@@ -1,0 +1,1 @@
+exports.base_path = '/api/v1'
